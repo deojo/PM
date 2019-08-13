@@ -1,11 +1,15 @@
 // team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo
-
+"use strict";
 // define game
 var game = new Phaser.Game(600, 500, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
 var dir = 0;
 var dir1 = 0;
 var six , seven;
-var player;
+var sound3;
+var paths, walls;
+var player, enemy, enemy2, win, item, trap;
+
+
 // define MainMenu state and methods
 var MainMenu = function(game) {};
 MainMenu.prototype = {
@@ -33,8 +37,9 @@ MainMenu.prototype = {
 
 	//create() places main menu assets into game space
 	create: function() {
-		titleText = game.add.text(35, 100, 'The Polite Minotaur', { fontSize: '35px', fill: '#000'}); //title text
-		IntructionText = game.add.text(30, 230, 'Goal: \n\nInstructions:  \n\n\nPress SPACEBAR to begin.', { fontSize: '16px', fill: '#000'}); //instruction text
+
+		let titleText = game.add.text(35, 100, 'The Polite Minotaur', { fontSize: '35px', fill: '#000'}); //title text
+		let IntructionText = game.add.text(30, 230, 'Goal: \n\nInstructions:  \n\n\nPress SPACEBAR to begin.', { fontSize: '16px', fill: '#000'}); //instruction text
 		game.stage.backgroundColor = "#7AD7F0"; //background color
 
 	},
@@ -70,7 +75,9 @@ Playstate.prototype = {
 
 	//create() places assets into game space
 	create: function() {
+		//sets world Size\
 
+		game.world.setBounds(0, 0, 2400, 2400);
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		game.stage.backgroundColor = "#000000"; //background color (black walls)
@@ -199,6 +206,7 @@ Playstate.prototype = {
 		//place a default trap into game
 		trap = game.add.image(220, 30, 'trap'); //red box
 		this.cursors = game.input.keyboard.createCursorKeys();
+
 		game.camera.follow(player);
 	},
 
@@ -212,6 +220,7 @@ Playstate.prototype = {
 		}
 		// checks for change of state either death or win
 		game.physics.arcade.overlap(enemy, player, kill, null, this);
+		game.physics.arcade.overlap(enemy2, player, kill, null, this);
 		game.physics.arcade.overlap(win, player, kill, null, this);
 		player.body.velocity.x = 0;
 		player.body.velocity.y = 0;
@@ -280,7 +289,7 @@ GameOver.prototype = {
 	//create() places game over text into game space
 	create: function() {
 		game.stage.backgroundColor = "#ffdbe9"; //background color
-		titleText = game.add.text(35, 35, 'Game Over', { fontSize: '35px', fill: '#000'});
+		let titleText = game.add.text(35, 35, 'Game Over', { fontSize: '35px', fill: '#000'});
 	},
 
 
