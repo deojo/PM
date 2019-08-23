@@ -1,14 +1,11 @@
 // created by dsjoshi
-// Player prefab constructor function
+// Wall prefab constructor function
 function Wall(game, key, frame, x , y) {
 
-    // Create platforms
+    // Create Walls
 
     Phaser.Sprite.call(this, game, x, y, key, frame);
 
-    this.moveSpeed = 150;
-    // add custom properties
-   // this.anchor.set(0.5);
     this.enableBody = true;
     // put some physics on it
     game.physics.enable(this);
@@ -17,10 +14,6 @@ function Wall(game, key, frame, x , y) {
     this.body.immovable = true;
 }
 
-// Define prefab's prototype and constructor (Snowstorm) so all the objects inherit
+// Define prefab's prototype and constructor (Walls) so all the objects inherit
 Wall.prototype = Object.create(Phaser.Sprite.prototype);
 Wall.prototype.constructor = Wall;
-
-Wall.prototype.update = function() {
-
-};
