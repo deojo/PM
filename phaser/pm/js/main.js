@@ -1,7 +1,7 @@
 // team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo
 "use strict";
 // define game
-var game = new Phaser.Game(2400, 2400, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
+var game = new Phaser.Game(600, 600, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
 var six , seven;
 var sound3, nd;
 var paths, walls;
@@ -66,7 +66,6 @@ Play.prototype = {
 		this.score = 0;
 		this.walkSpeed = 300;
 		this.runSpeed = 750;
-		this.resprint = false;
 		this.timer = game.time.create(false);
 	},
 
@@ -218,15 +217,15 @@ Play.prototype = {
 		// Applied to sprint bar
 		spb.mask = mask;
 		mask.fixedToCamera = true;
+		mask.cameraOffset.setTo(0);
 		game.camera.follow(player);
 	},
 
 	//update() runs gameloop
 	update: function() {
-		console.log(mask.position);
 		//stop when the player collides with wall
 		let hitWall = game.physics.arcade.collide(player, walls);
-
+		mask.cameraOffset.setTo(sprintUsed);
 		let speed = this.walkSpeed;
 		game.physics.arcade.overlap(player, traps, overlapTrap, null, this);
 		if (game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) && sprintUsed < sprintTimer
@@ -235,14 +234,12 @@ Play.prototype = {
 			speed = this.runSpeed;
 			sprintUsed++;
 			mask.x--;
+			mask.cameraOffset.setTo(-sprintUsed);
+			this.lastUsed = game.time;
 		}
-		if (sprintUsed >= sprintTimer/4 && (sprintUsed % (sprintTimer/4) === 0)) {
-			this.timer.loop(1200, () => this.resprint = true, this);
-			this.timer.start();
-		}
-		if (sprintUsed > 0 && this.resprint) {
+		if (sprintUsed > 0 && this.lastUsed.elapsedSecondsSince(2)) {
 			sprintUsed--;
-			console.log(sprintUsed, this.resprint);
+			mask.cameraOffset.setTo(-sprintUsed);
 			mask.x++;
 		}
 		player.body.velocity.setTo(0);
@@ -298,7 +295,9 @@ function overlapTrap(player, trap) {
 	if(toggleTrap.justPressed()){
 		player.frozen = trap.toggle();
 	}
-
+}
+function makePath(x, y) {
+	paths.create(x, y, 'ground')
 }
 function makeWall(x, y) {
 	let wall = new Wall(game, 'wall', 0, x, y);
