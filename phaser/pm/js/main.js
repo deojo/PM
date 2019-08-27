@@ -1,7 +1,7 @@
 // team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo
 "use strict";
 // define game
-var game = new Phaser.Game(2400, 2400, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
+var game = new Phaser.Game(600, 600, Phaser.AUTO); 
 var six , seven;
 var sound3, nd;
 var paths, walls;
@@ -10,7 +10,9 @@ var player, enemies;
 const sprintTimer = 192;
 var sprintUsed = 0;
 var spb, mask;
-var maze, nVisited;
+var maze, nVisited; 
+var fade;
+var win = false; 
 
 // define MainMenu state and methods
 var MainMenu = function(game) {};
@@ -22,13 +24,23 @@ MainMenu.prototype = {
 		game.load.image('wall', 'assets/images/wall.png');
 
 		//preload object assets
-		game.load.image('trapOff', 'assets/images/trapOff.png'); //green default trap (50x50px)
-		game.load.image('trapOn', 'assets/images/claws.png'); //red default trap (50x50px)
+		game.load.image('trapOff', 'assets/images/trapOff.png'); 
+		game.load.image('trapOn', 'assets/images/claws.png'); 
+		game.load.image('trapOff2', 'assets/images/trap2Idle.png'); //wood trap(50x50px)
+		game.load.image('trapOn2', 'assets/images/trap2Active.png'); //wood trap(50x50px)
+		game.load.image('trapOff3', 'assets/images/trap3Idle.png'); //floor trap(50x50px)
+		game.load.image('trapOn3', 'assets/images/trap3Active.png'); //floor trap(50x50px)		
+		//game.load.image('trapOff', 'assets/images/trapOff.png'); //green default trap (50x50px)
+		//game.load.image('trapOn', 'assets/images/claws.png'); //red default trap (50x50px)
+
 		game.load.image('sprint', 'assets/images/sprint.png'); //sprint bar
+		game.load.image('mainMenu', 'assets/images/trapMainMenu.png'); //main menu image
+		game.load.image('fade', 'assets/images/fade.png'); //fade 
+
 
 		//preload character spritesheets
 		game.load.spritesheet('player', 'assets/images/mn.png', 140, 140); //minotaur player (80x55px)
-		game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
+		game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //enemy (80x45px)
 
 		//preload audio
 		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
@@ -40,9 +52,10 @@ MainMenu.prototype = {
 
 	//create() places main menu assets into game space
 	create: function() {
-		let titleText = game.add.text(35, 100, 'The Polite Minotaur', { fontSize: '35px', fill: '#000'}); //title text
-		let instructionText = game.add.text(30, 230, 'Goal: \n\nInstructions:  \n\n\nPress SPACEBAR to begin.', { fontSize: '16px', fill: '#000'}); //instruction text
-		game.stage.backgroundColor = "#7AD7F0"; //background color
+		let titleText = game.add.text(40, 100, 'The Polite Minotaur', { fontSize: '50px', fill: '#ffffff'}); //title text
+		let IntructionText = game.add.text(35, 230, 'Instructions: Press arrow keys to navigate, \nE to turn off and on traps, and SHIFT to sprint.\n\n\nPress SPACEBAR to begin.', { fontSize: '20px', fill: '#ffffff'}); //instruction text
+		game.stage.backgroundColor = "#000"; //background color
+		game.add.image(350, 300, 'mainMenu'); 
 	},
 
 
@@ -116,11 +129,12 @@ Play.prototype = {
 		//place and draw groundtiles into maze paths into map (entire maze is sevenxseven tiles or 2100x2100px)
 
 		//create group traps
-		makeTrap(1900, 2000);
-		makeTrap(2000, 2000);
+		makeTrap(two, one, 'trapOn', 'trapOff');
+		makeTrap(two, three+100, 'trapOn2', 'trapOff2');
+		makeTrap(two, one+100, 'trapOn3', 'trapOff3');
 
 		//place player into game
-		player = game.add.sprite(six, six, 'player');
+		player = game.add.sprite(0, one, 'player');
 		player.animations.add('down', [0, 1, 2, 3, 4], 10, true);
 		player.animations.add('left', [5, 6, 7, 8, 9], 10, true);
 		player.animations.add('up', [10, 11, 12, 13, 14], 10, true);
@@ -132,6 +146,11 @@ Play.prototype = {
 
 		makeEnemy(two,two);
 		makeEnemy(two,seven);
+
+		fade = game.add.image(-30, -30, 'fade'); //add lighting fade 
+		fade.cameraOffset.setTo(0);
+		fade.fixedToCamera = true; 
+		fade.scale.setTo(1.2,1.2);
 
 		this.cursors = game.input.keyboard.createCursorKeys();
 		// Sprint bar created
@@ -147,6 +166,7 @@ Play.prototype = {
 		mask.fixedToCamera = true;
 		mask.cameraOffset.setTo(0);
 		game.camera.follow(player);
+
 	},
 
 	//update() runs gameloop
@@ -198,7 +218,9 @@ Play.prototype = {
 		}
 
 		if(player.x >= six && player.y >= seven){
+			fade.destroy(); 
 			sound3.play();
+			win = true; 
 			game.state.start('GameOver', true, false, this.score );
 		}
 	},
@@ -214,8 +236,17 @@ GameOver.prototype = {
 
 	//create() places game over text into game space
 	create: function() {
-		game.stage.backgroundColor = "#ffdbe9"; //background color
-		let titleText = game.add.text(35, 35, 'Game Over', { fontSize: '35px', fill: '#000'});
+		if (!win){ //lose screen if you lose game
+			game.stage.backgroundColor = "#ffdbe9"; //background color
+			let titleText = game.add.text(35, 35, 'Game Over: You were killed.', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(50, 35, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+		}
+		if (win){ //win screen if you win game 
+			game.stage.backgroundColor = "#000"; //background color
+			let titleText = game.add.text(35, 150, 'Game Over: You escaped!!', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(35,300, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+			win = false; //reset
+		}
 	},
 
 	//update() runs game-over loop
@@ -262,8 +293,8 @@ function makeEnemy(x, y) {
 	game.add.existing(enemy);
 	enemies.add(enemy);
 }
-function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
-	let trap = new Trap(game, 'trapOn', "trapOff", 0, x, y, active, rangeX, rangeY);
+function makeTrap(x, y, keyTrapOn, keyTrapOff, active=true, rangeX=200, rangeY=200) {
+	let trap = new Trap(game, keyTrapOn, keyTrapOff, 0, x, y, active, rangeX, rangeY);
 	game.add.existing(trap);
 	game.add.existing(trap.range);
 	traps.add(trap);
