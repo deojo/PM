@@ -8,10 +8,16 @@ function Trap(game, key1, key2, frame, x , y, active, rangeX, rangeY) {
     this.enableBody = true;
 	this.active = active;
 	this.count = 0;
+	this.collided = false;
     // put some physics on it
     game.physics.enable(this);
     this.body.collideWorldBounds = false;
     this.body.immovable = true;
+    this.range = game.make.sprite(x-rangeX/2, y-rangeY/2, null);
+    game.physics.enable(this.range);
+    this.range.enableBody = true;
+    this.range.body.setSize(rangeX, rangeY);
+    this.range.container = this;
 }
 
 // Define prefab's prototype and constructor (Trap) so all the objects inherit
@@ -28,10 +34,11 @@ Trap.prototype.activate = function() {
 };
 
 Trap.prototype.toggle = function() {
-    if (this.count === 5 || !this.active){
+    if (this.count === 5 || !this.active || !this.collided){
         this.loadTexture(this.keyset[1 - this.keyset.indexOf(this.key)]);
         this.active = !this.active;
         this.count = 0;
+        this.collided = false;
     }else{game.camera.shake(); this.count++;}
     return this.count !== 5 && this.active;
 };

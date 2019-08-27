@@ -1,3 +1,12 @@
+const mazeValues ={
+    Pathway: 5,
+    Both: 4,
+    unVis: 3,
+    Exit: 2,
+    Wall: 1
+
+};
+
 function generateMaze(x,y){
     maze = [];
     let temp;
@@ -10,6 +19,7 @@ function generateMaze(x,y){
     let exit = createExit(x,y);
     createPerimeter(x,y,exit);
     createInner(exit, x ,y);
+    return maze;
 }
 // creates the perimater of the maze
 function createPerimeter(x,y,exit){
@@ -39,21 +49,12 @@ function createExit(x,y){// curently broken and always picks the top left as the
     return 1;//
 }
 function createInner(start, width, length){
-    nVisited = []; // ist of what needs to be visited
+    nVisited = []; // list of what needs to be visited
     let done = 0;// while flagloop
     let temp1 = 0;
     let temp2 = 0;
     let holder1;
     let holder2;
-
-    const mazeValues ={
-        Pathway: 5,
-        Both: 4,
-        unVis: 3,
-        Exit: 2,
-        Wall: 1
-
-    }
     //let total = 0;
     //set all even/even to 3, odd/odd to 1 and odd/even to 4
     console.log(maze);
@@ -182,24 +183,4 @@ function createInner(start, width, length){
     }
     // if not set as possible new path to use use
     //randomly select a path
-}
-function enemySearching(enemy) {
-    let start = [Math.ceil(enemy.body.x/300), Math.ceil(enemy.body.y/300)];
-    let map ={};
-    let candidates = [];
-    let list = [[start[0] - 1, start[1]], [start[0] + 1, start[1]], [start[0], start[1] + 1], [start[0], start[1] - 1]];
-    for (var a of list){
-        if (maze[a[0]][a[1]] === 5 || maze[a[0]][a[1]] === 2){
-            let dist = euclidean(a, [player.position.x/300, player.position.y/300]);
-            candidates.push(dist);
-            map[dist]= a;
-        }
-    }
-    var t = map[Math.min.apply(null, candidates)];
-    var x = t[0] * 300;
-    var y = t[1] * 300;
-    game.physics.arcade.moveToXY(enemy,x, y, 100);
-}
-function euclidean(pos1, pos2) {
-    return Math.abs(pos1[0] - pos2[0] ) + Math.abs( pos1[1] - pos2[1]);
 }
