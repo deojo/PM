@@ -14,6 +14,7 @@ var maze, nVisited, emitter;
 var partic = 0;
 var keyNum = 0;
 var fade;
+var win = false;
 
 // define MainMenu state and methods
 var MainMenu = function(game) {};
@@ -32,7 +33,7 @@ MainMenu.prototype = {
 		game.load.image('trapOn2', 'assets/images/trap2active.png');
 		game.load.image('trapOff2', 'assets/images/trap2Idle.png');
 		game.load.image('sprint', 'assets/images/sprint.png'); //sprint bar
-
+		game.load.image('mainMenu', 'assets/images/trapMainMenu.png'); //main menu image
 		//preload character spritesheets
 		game.load.spritesheet('player', 'assets/images/mn.png', 140, 140); //minotaur player (80x55px)
 		//game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
@@ -48,9 +49,10 @@ MainMenu.prototype = {
 
 	//create() places main menu assets into game space
 	create: function() {
-		let titleText = game.add.text(35, 100, 'The Polite Minotaur', { fontSize: '35px', fill: '#000'}); //title text
-		let instructionText = game.add.text(30, 230, 'Goal: \n\nInstructions:  \n\n\nPress SPACEBAR to begin.', { fontSize: '16px', fill: '#000'}); //instruction text
-		game.stage.backgroundColor = "#7AD7F0"; //background color
+		let titleText = game.add.text(40, 100, 'The Polite Minotaur', { fontSize: '50px', fill: '#ffffff'}); //title text
+		let IntructionText = game.add.text(35, 230, 'Instructions: Press arrow keys to navigate, \nE to turn off and on traps, and SHIFT to sprint.\n\n\nPress SPACEBAR to begin.', { fontSize: '20px', fill: '#ffffff'}); //instruction text
+		game.stage.backgroundColor = "#000"; //background color
+		game.add.image(350, 300, 'mainMenu');
 	},
 
 
@@ -245,8 +247,17 @@ GameOver.prototype = {
 
 	//create() places game over text into game space
 	create: function() {
-		game.stage.backgroundColor = "#ffdbe9"; //background color
-		let titleText = game.add.text(35, 35, 'Game Over', { fontSize: '35px', fill: '#000'});
+		if (!win){ //lose screen if you lose game
+			game.stage.backgroundColor = "#ffdbe9"; //background color
+			let titleText = game.add.text(35, 35, 'Game Over: You were killed.', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(50, 35, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+		}
+		if (win){ //win screen if you win game
+			game.stage.backgroundColor = "#000"; //background color
+			let titleText = game.add.text(35, 150, 'Game Over: You escaped!!', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(35,300, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+			win = false; //reset
+		}
 	},
 
 	//update() runs game-over loop
