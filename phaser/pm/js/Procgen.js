@@ -35,6 +35,11 @@ function createPerimeter(x,y,exit){
                     makeWall(h*300,i*300);
                     maze[h][i] = 1;
                 }
+                else if(i == exit || h === y-1){
+                  makePath(0, exit*300);
+                  let winTile = game.add.image(0, exit*300, 'doors');
+
+                }
             }
             if(maze[0].length > y){
                 debugger;
@@ -43,10 +48,13 @@ function createPerimeter(x,y,exit){
     }
 }
 function createExit(x,y){// curently broken and always picks the top left as the exit
-    let temp1 = game.rnd.integerInRange(0,y);// this might be wrong
+    let temp1 = game.rnd.integerInRange(0,4);// this might be wrong
+    let temp2;
     //make sure this is the proper way to destroy walls
-    maze[0][1] = 2;
-    return 1;//
+    let haha = [1,3,5,7,9,11];
+    temp2 = haha[temp1];
+    maze[0][temp2] = 2;
+    return temp2;//
 }
 function createInner(start, width, length){
     nVisited = []; // list of what needs to be visited

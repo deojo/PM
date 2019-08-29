@@ -3,7 +3,7 @@
 // define game
 var game = new Phaser.Game(900, 900, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
 var six , seven;
-var sound3, nd, hitTrap, death, walking;
+var sound3, nd, hitTrap, death, walking, mainSound, enemySound, activate, winSound;
 var paths, walls;
 var traps, ranges, toggleTrap;
 var player, enemies;
@@ -14,7 +14,7 @@ var maze, nVisited, emitter;
 var partic = 0;
 var par = 0;
 var keyNum = 0;
-var keyNum1 = 0; 
+var keyNum1 = 0;
 var fade;
 var win = false;
 
@@ -53,6 +53,10 @@ MainMenu.prototype = {
 		game.load.audio('HitTrap',['assets/audio/HitTrap.mp3']);
 		game.load.audio('walking',['assets/audio/walking.mp3']);
 		game.load.audio('Death',['assets/audio/Death.mp3']);
+		game.load.audio('main',['assets/audio/main.mp3']);
+		game.load.audio('enemy',['assets/audio/enemy.mp3']);
+		game.load.audio('activate',['assets/audio/activate.mp3']);
+		game.load.audio('win',['assets/audio/win.mp3']);
 	},
 
 
@@ -97,8 +101,13 @@ Play.prototype = {
 		sound3 = game.add.audio('shoot');
 		nd = game.add.audio('die');
 		walking = game.add.audio('walking');
+		walking.volume = 0.5;
 		hitTrap = game.add.audio('HitTrap');
 		death = game.add.audio('death');
+		enemySound = game.add.audio('enemy');
+		mainSound = game.add.audio('main');
+		activate = game.add.audio('activate');
+		winSound = game.add.audio('win');
 
 
 	},
@@ -133,7 +142,7 @@ Play.prototype = {
 		var eight = start+tileSize*7;
 
 
-		//create group called paths for groundtiles 
+		//create group called paths for groundtiles
 		paths = game.add.group();
 		walls = game.add.group();
 		traps = game.add.group();
@@ -162,8 +171,8 @@ Play.prototype = {
 		fade.cameraOffset.setTo(0);
 		fade.fixedToCamera = true;
 		fade.scale.setTo(1.8,1.8);
+		enemySound.play();
 
-		let winTile = game.add.image(zero, one, 'doors');
 
 		this.cursors = game.input.keyboard.createCursorKeys();
 		// Sprint bar created
@@ -188,7 +197,8 @@ Play.prototype = {
 		//stop when the player collides with wall
 		let hitWall = game.physics.arcade.collide(player, walls);
 		if (player.x< 280){
-			win = true; 
+			win = true;
+			winSound.play();
 			game.state.start('GameOver');
 		}
 		game.physics.arcade.overlap(enemies, traps, trapEnemy, null, this);
@@ -218,7 +228,7 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
-				if(par >= 25){
+				if(par >= 21){
 					walking.play();
 					par = 0;
 				}
@@ -231,7 +241,7 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
-				if(par >= 25){
+				if(par >= 21){
 					walking.play();
 					par = 0;
 				}
@@ -244,7 +254,7 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
-				if(par >= 25){
+				if(par >= 21){
 					walking.play();
 					par = 0;
 				}
@@ -257,7 +267,7 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
-				if(par >= 25){
+				if(par >= 21){
 					walking.play();
 					par = 0;
 				}
@@ -301,7 +311,7 @@ GameOver.prototype = {
 	//update() runs game-over loop
 	update: function() {
 		if (game.input.keyboard.isDown(Phaser.KeyCode.SPACEBAR)) { //if space is pressed, restart back to Play
-			win = false; 
+			win = false;
 			game.state.start('Play'); //return to playstate
 		}
 	},
@@ -316,6 +326,7 @@ function overlapRange(player, range) {
 function trapEnemy(enemy, trap) {
 	if (trap.active) {
 		enemy.frozen = true;
+		activate.play();
 	}
 }
 
@@ -323,6 +334,7 @@ function overlapTrap(player, trap) {
 	trap.collided =true;
 	if(trap.active){
 		player.frozen = true;
+		activate.play();
 	}
 	if(toggleTrap.justPressed()){
 		player.frozen = trap.toggle();
@@ -339,13 +351,13 @@ function makeWall(x, y) {
 
 function makeEnemy(x, y) {
 //place a enemy into game
-	let enemy; 
+	let enemy;
 	if(keyNum1%2 ==0){
 		enemy = new Enemy(game, 'enemy', 0, x, y, player, maze, mazeValues);
 	}else{
 		enemy = new Enemy(game, 'enemy2', 0, x, y, player, maze, mazeValues);
 	}
-	keyNum1++; 
+	keyNum1++;
 	game.add.existing(enemy);
 	enemies.add(enemy);
 }

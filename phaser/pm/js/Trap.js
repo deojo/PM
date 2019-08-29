@@ -40,6 +40,7 @@ Trap.prototype.toggle = function() {
         this.active = !this.active;
         this.count = 0;
         this.collided = false;
+        hitTrap.play();
     }else{game.camera.shake(); this.count++;}
     return this.count !== 5 && this.active;
 };
