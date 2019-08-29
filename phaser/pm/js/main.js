@@ -13,6 +13,7 @@ var spb, mask;
 var maze, nVisited, emitter;
 var partic = 0;
 var keyNum = 0;
+var keyNum1 = 0; 
 var fade;
 var win = false;
 
@@ -26,18 +27,22 @@ MainMenu.prototype = {
 		game.load.image('wall', 'assets/images/wall.png');
 		game.load.image('dirt', 'assets/images/dirt.png');
 		game.load.image('fade', 'assets/images/fade.png');
+		game.load.image('doors', 'assets/images/doors.png');
 
 		//preload object assets
 		game.load.image('trapOff1', 'assets/images/trap3Idle.png'); //green default trap (50x50px)
 		game.load.image('trapOn1', 'assets/images/trap3active.png'); //red default trap (50x50px)
-		game.load.image('trapOn2', 'assets/images/trap2active.png');
-		game.load.image('trapOff2', 'assets/images/trap2Idle.png');
+		game.load.image('trapOn2', 'assets/images/trap1active.png');
+		game.load.image('trapOff2', 'assets/images/trap1Idle.png');
 		game.load.image('sprint', 'assets/images/sprint.png'); //sprint bar
-		game.load.image('mainMenu', 'assets/images/trapMainMenu.png'); //main menu image
+		game.load.image('mainMenu', 'assets/images/pmMeme.png'); //main menu image
+		game.load.image('minotaurThought', 'assets/images/minotaurThought.png');
+		game.load.image('bubble', 'assets/images/bubble.png');
 		//preload character spritesheets
 		game.load.spritesheet('player', 'assets/images/mn.png', 140, 140); //minotaur player (80x55px)
 		//game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
 		game.load.spritesheet('enemy', 'assets/images/enemy2sprite.png', 110, 110);
+		game.load.spritesheet('enemy2', 'assets/images/enemy3sprite.png', 110, 110);
 
 		//preload audio
 		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
@@ -49,10 +54,14 @@ MainMenu.prototype = {
 
 	//create() places main menu assets into game space
 	create: function() {
-		let titleText = game.add.text(40, 100, 'The Polite Minotaur', { fontSize: '50px', fill: '#ffffff'}); //title text
-		let IntructionText = game.add.text(35, 230, 'Instructions: Press arrow keys to navigate, \nE to turn off and on traps, and SHIFT to sprint.\n\n\nPress SPACEBAR to begin.', { fontSize: '20px', fill: '#ffffff'}); //instruction text
 		game.stage.backgroundColor = "#000"; //background color
-		game.add.image(350, 300, 'mainMenu');
+		game.add.image(0, 0, 'mainMenu');
+		game.add.image(330, 80, 'bubble');
+		game.add.image(450, 60, 'bubble');
+		game.add.image(580, 80, 'bubble');
+		let titleText = game.add.text(40, 350, 'The Polite \n  Minotaur', { fontSize: '70px', fill: '#ffffff', font: 'Press Start 2P'}); //title text
+		let minotaurText = game.add.text(40, 100, 'Please leave my home.. \nI have to escape..', { fontSize: '50px', fill: '#ffffff', font: 'Bahianita'}); //title text
+		let IntructionText = game.add.text(200, 600, 'Instructions: Press arrow keys to navigate, \nPress E to turn off and on traps, and SHIFT to sprint.\n\n             Press SPACEBAR to begin.', { fontSize: '50px', fill: '#ffffff', font: 'Bahianita'}); //instruction text
 	},
 
 
@@ -115,7 +124,7 @@ Play.prototype = {
 		var eight = start+tileSize*7;
 
 
-		//create group called paths for groundtiles (gray boxes)
+		//create group called paths for groundtiles 
 		paths = game.add.group();
 		walls = game.add.group();
 		traps = game.add.group();
@@ -123,7 +132,6 @@ Play.prototype = {
 		enemies = game.add.group();
 
 		maze = generateMaze(13, 13);
-		//place and draw groundtiles into maze paths into map (entire maze is sevenxseven tiles or 2100x2100px)
 
 		//place player into game
 		let tempI = [1,3,5,7,9,11];
@@ -145,6 +153,8 @@ Play.prototype = {
 		fade.cameraOffset.setTo(0);
 		fade.fixedToCamera = true;
 		fade.scale.setTo(1.8,1.8);
+
+		let winTile = game.add.image(zero, one, 'doors');
 
 		this.cursors = game.input.keyboard.createCursorKeys();
 		// Sprint bar created
@@ -169,6 +179,7 @@ Play.prototype = {
 		//stop when the player collides with wall
 		let hitWall = game.physics.arcade.collide(player, walls);
 		if (player.x< 280){
+			win = true; 
 			game.state.start('GameOver');
 		}
 		game.physics.arcade.overlap(enemies, traps, trapEnemy, null, this);
@@ -248,21 +259,23 @@ GameOver.prototype = {
 	//create() places game over text into game space
 	create: function() {
 		if (!win){ //lose screen if you lose game
-			game.stage.backgroundColor = "#ffdbe9"; //background color
-			let titleText = game.add.text(35, 35, 'Game Over: You were killed.', { fontSize: '35px', fill: '#ffffff'});
-			let creditText = game.add.text(50, 35, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+			game.stage.backgroundColor = "#000000"; //background color
+			let titleText = game.add.text(35, 150, 'Game Over: You were killed.', { fontSize: '90px', fill: '#8A0303', font: 'Bahianita'});
+			let creditText = game.add.text(35, 420, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art\n\nBackground music: From bensound at https://www.bensound.com\nMain menu art: Theseus and the Minosaur by Edward Burne-Jones 1861', {fill: '#ffffff', fontSize: '45px', font: 'Bahianita'});
+			let restartText = game.add.text(300, 320,'Press SPACEBAR to restart', {fill: '#aa8717ff', fontSize: '45px', font: 'Bahianita'});
 		}
 		if (win){ //win screen if you win game
-			game.stage.backgroundColor = "#000"; //background color
-			let titleText = game.add.text(35, 150, 'Game Over: You escaped!!', { fontSize: '35px', fill: '#ffffff'});
-			let creditText = game.add.text(35,300, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
-			win = false; //reset
+			game.stage.backgroundColor = "#000000"; //background color
+			let titleText = game.add.text(30, 150, 'Game Over: You made it out alive!!!', { fontSize: '100px', fill: '#1cb377ff', font: 'Bahianita'});
+			let creditText = game.add.text(35, 420, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art\n\nBackground music: From bensound at https://www.bensound.com\nMain menu art: Theseus and the Minosaur by Edward Burne-Jones 1861', {fill: '#ffffff', fontSize: '45px', font: 'Bahianita'});
+			let restartText = game.add.text(300, 320,'Press SPACEBAR to restart', {fill: '#aa8717ff', fontSize: '45px', font: 'Bahianita'});
 		}
 	},
 
 	//update() runs game-over loop
 	update: function() {
 		if (game.input.keyboard.isDown(Phaser.KeyCode.SPACEBAR)) { //if space is pressed, restart back to Play
+			win = false; 
 			game.state.start('Play'); //return to playstate
 		}
 	},
@@ -300,13 +313,19 @@ function makeWall(x, y) {
 
 function makeEnemy(x, y) {
 //place a enemy into game
-	let enemy = new Enemy(game, 'enemy', 0, x, y, player, maze, mazeValues);
+	let enemy; 
+	if(keyNum1%2 ==0){
+		enemy = new Enemy(game, 'enemy', 0, x, y, player, maze, mazeValues);
+	}else{
+		enemy = new Enemy(game, 'enemy2', 0, x, y, player, maze, mazeValues);
+	}
+	keyNum1++; 
 	game.add.existing(enemy);
 	enemies.add(enemy);
 }
 function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
 	let trap;
-	if(keyNum %2 ==0){
+	if(keyNum%2 ==0){
  		trap = new Trap(game, 'trapOn1', "trapOff1", 0, x, y, active, rangeX, rangeY);
 	}
 	else{
