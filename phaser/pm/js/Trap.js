@@ -13,6 +13,7 @@ function Trap(game, key1, key2, frame, x , y, active, rangeX, rangeY) {
     game.physics.enable(this);
     this.body.collideWorldBounds = false;
     this.body.immovable = true;
+    // Add range
     this.range = game.make.sprite(x-rangeX/2, y-rangeY/2, null);
     game.physics.enable(this.range);
     this.range.enableBody = true;

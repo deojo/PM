@@ -5,7 +5,7 @@ function Enemy(game, key, frame, x , y) {
 
     // Create Enemies
 
-    Phaser.Sprite.call(this, game, x, y, key, frame, player, maze, mazeValues);
+    Phaser.Sprite.call(this, game, x, y, key, frame);
     this.frozen = false;
     //this.anchor.set(0.5, 0.5);
     this.enableBody = true;
@@ -35,16 +35,11 @@ Enemy.prototype.minimumDistance = function (enemyPosition, playerPosition, maze,
                 visited[i][h] = null;
             }
         }
-
         for (let i = 0; i < maze[0].length; i++) {
             for (let h = 0; h < maze.length; h++) {
                 if (maze[h][i] === mazeValues.Wall) {
                     visited[h][i] = true;
-                } else if (h === enemyPosition.x && i === enemyPosition.y) {
-                    visited[h][i] = true;
-                } else {
-                    visited[h][i] = false;
-                }
+                } else visited[h][i] = h === enemyPosition.x && i === enemyPosition.y;
             }
         }
 
@@ -59,28 +54,28 @@ Enemy.prototype.minimumDistance = function (enemyPosition, playerPosition, maze,
 
             // moving up
             if (qItem.x - 1 >= 0 &&
-                visited[qItem.x - 1][qItem.y] == false) {
+                visited[qItem.x - 1][qItem.y] === false) {
                 queue.push({x: qItem.x - 1, y: qItem.y, dist: qItem.dist + 1, parent: qItem});
                 visited[qItem.x - 1][qItem.y] = true;
             }
 
             // moving down
             if (qItem.x + 1 < maze[0].length &&
-                visited[qItem.x + 1][qItem.y] == false) {
+                visited[qItem.x + 1][qItem.y] === false) {
                 queue.push({x: qItem.x + 1, y: qItem.y, dist: qItem.dist + 1, parent: qItem});
                 visited[qItem.x + 1][qItem.y] = true;
             }
 
             // moving left
             if (qItem.y - 1 >= 0 &&
-                visited[qItem.x][qItem.y - 1] == false) {
+                visited[qItem.x][qItem.y - 1] === false) {
                 queue.push({x: qItem.x, y: qItem.y - 1, dist: qItem.dist + 1, parent: qItem});
                 visited[qItem.x][qItem.y - 1] = true;
             }
 
             // moving right
             if (qItem.y + 1 < maze.length &&
-                visited[qItem.x][qItem.y + 1] == false) {
+                visited[qItem.x][qItem.y + 1] === false) {
                 queue.push({x: qItem.x, y: qItem.y + 1, dist: qItem.dist + 1, parent: qItem});
                 visited[qItem.x][qItem.y + 1] = true;
             }
@@ -121,15 +116,13 @@ Enemy.prototype.search = function (player, maze, mazeValues) {
                 //bottom
                 this.frame = 1;
             }
-
-
             this.previousEnemyPosition = nextEnemyPosition;
             let x = (nextEnemyPosition.x * 300) + 95;
             let y = (nextEnemyPosition.y * 300) + 95;
             game.physics.arcade.moveToXY(this, x, y, 100);
         }
     }
-}
+};
 
 
 Enemy.prototype.raycast = function(maze, mazeValues){

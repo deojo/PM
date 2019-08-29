@@ -1,9 +1,8 @@
 // team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo
 "use strict";
 // define game
-var game = new Phaser.Game(900, 900, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
-var six , seven;
-var sound3, nd, hitTrap, death, walking, mainSound, enemySound, activate, winSound;
+var game = new Phaser.Game(900, 900, Phaser.AUTO); //maze size is 4000x4000 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
+var nd, hitTrap, death, walking, mainSound, enemySound, activate, winSound;
 var paths, walls;
 var traps, ranges, toggleTrap;
 var player, enemies;
@@ -42,16 +41,12 @@ MainMenu.prototype = {
 		game.load.image('bubble', 'assets/images/bubble.png');
 
 		//preload character spritesheets
-		game.load.spritesheet('player', 'assets/images/mn.png', 140, 140); //minotaur player (80x55px)
-		//game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
+		game.load.spritesheet('player', 'assets/images/mn(2).png', 180, 180); //minotaur player (80x55px)
 		game.load.spritesheet('enemy', 'assets/images/enemy2sprite.png', 110, 110);
 		game.load.spritesheet('enemy2', 'assets/images/enemy3sprite.png', 110, 110);
 
 		//preload audio
-		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
 		game.load.audio('die',['assets/audio/Die.mp3']);
-   	game.load.audio('score',['assets/audio/Score.mp3']);
-    game.load.audio('song',['assets/audio/Song.mp3']);
 		game.load.audio('HitTrap',['assets/audio/HitTrap.mp3']);
 		game.load.audio('walking',['assets/audio/walking.mp3']);
 		game.load.audio('Death',['assets/audio/Death.mp3']);
@@ -92,7 +87,6 @@ Play.prototype = {
 		console.log('Play: init');
 		// created local variable score in this
 		this.state = "Play";
-		this.score = 0;
 		this.walkSpeed = 300;
 		this.runSpeed = 750;
 	},
@@ -100,7 +94,6 @@ Play.prototype = {
 	//preload() function preloads assets
 	preload: function() {
 
-		sound3 = game.add.audio('shoot');
 		nd = game.add.audio('die');
 		walking = game.add.audio('walking');
 		walking.volume = 0.5;
@@ -123,25 +116,8 @@ Play.prototype = {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.stage.backgroundColor = "#000000"; //background color (black walls)
 
-		let music = game.add.audio('song', 1, true, true);
-		//music.play();
-
 		//set T key as toggle trap button
 		toggleTrap = game.input.keyboard.addKey(Phaser.Keyboard.T);
-
-		//variables to help with drawing groundtiles
-		var tileSize = 300;
-		var start = tileSize; //starts by giving space for a tile thick border around maze
-		//tile positioning variables based on sevenxseven grid
-		var zero = 0;
-		var one = start;
-		var two = start+tileSize;
-		var three = start+tileSize*2;
-		var four = start+tileSize*3;
-		var five = start+tileSize*4;
-		six = start+tileSize*5;
-		seven = start+tileSize*6;
-		var eight = start+tileSize*7;
 
 
 		//create group called paths for groundtiles
@@ -151,7 +127,6 @@ Play.prototype = {
 		ranges = game.add.group();
 		enemies = game.add.group();
 
-		//maze = generateMaze(7, 7);
 		maze = generateMaze(13, 13);
 
 		//place player into game
@@ -164,7 +139,7 @@ Play.prototype = {
 		player.animations.add('down', [0, 1, 2, 3, 4], 10, true);
 		player.animations.add('left', [5, 6, 7, 8, 9], 10, true);
 		player.animations.add('up', [10, 11, 12, 13, 14], 10, true);
-		player.animations.add('right', [15, 16, 18, 19], 10, true);
+		player.animations.add('right', [15, 16, 17, 18, 19], 10, true);
 		game.physics.arcade.enable(player);
 		player.frozen = false;
 		player.body.collideWorldBounds = true;
@@ -289,7 +264,7 @@ Play.prototype = {
 // define GameOver and methods
 var GameOver = function(game) {};
 GameOver.prototype = {
-	//preload() function preloads assetst
+	//preload() function preloads assets
 	preload: function() {
 
 	},
@@ -354,10 +329,10 @@ function makeWall(x, y) {
 function makeEnemy(x, y) {
 //place a enemy into game
 	let enemy;
-	if(keyNum1%2 ==0){
-		enemy = new Enemy(game, 'enemy', 0, x, y, player, maze, mazeValues);
+	if(keyNum1%2 === 0){
+		enemy = new Enemy(game, 'enemy', 0, x, y);
 	}else{
-		enemy = new Enemy(game, 'enemy2', 0, x, y, player, maze, mazeValues);
+		enemy = new Enemy(game, 'enemy2', 0, x, y);
 	}
 	keyNum1++;
 	game.add.existing(enemy);
@@ -365,7 +340,7 @@ function makeEnemy(x, y) {
 }
 function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
 	let trap;
-	if(keyNum%2 ==0){
+	if(keyNum%2 === 0){
  		trap = new Trap(game, 'trapOn1', "trapOff1", 0, x, y, active, rangeX, rangeY);
 	}
 	else{
