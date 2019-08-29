@@ -21,6 +21,86 @@ function generateMaze(x,y){
     createInner(exit, x ,y);
     return maze;
 }
+/*
+function generateMaze(x,y){
+    maze = [
+        [
+            1,
+            2,
+            1,
+            1,
+            1,
+            1,
+            1
+        ],
+        [
+            1,
+            5,
+            1,
+            5,
+            5,
+            5,
+            1
+        ],
+        [
+            1,
+            5,
+            1,
+            5,
+            1,
+            5,
+            1
+        ],
+        [
+            1,
+            5,
+            5,
+            5,
+            1,
+            5,
+            1
+        ],
+        [
+            1,
+            5,
+            1,
+            1,
+            1,
+            5,
+            1
+        ],
+        [
+            1,
+            5,
+            5,
+            5,
+            1,
+            5,
+            1
+        ],
+        [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+        ]
+    ];
+    displayMaze();
+    return maze;
+}
+
+function displayMaze(){
+    for(let i = 0 ; i < maze[0].length ; i++){
+        for( let j = 0 ;j < maze.length ; j++){
+             if( maze[i][j] === mazeValues.Wall){
+                 makeWall(i*300, j* 300);
+             }
+        }
+    }
+}*/
 // creates the perimater of the maze
 function createPerimeter(x,y,exit){
     console.log(maze);
@@ -177,6 +257,37 @@ function createInner(start, width, length){
                         maze[h][i] = 1;
                         makeWall(h*300,i*300);
                     }
+                }
+            }
+            let openLots = [];
+            let numTrap = 7;
+            let numEnemy = 7;
+            for(var i = 0; i <length; i++){//i represents the y axis
+                for(var h = 0; h<width; h++){//h represents the x axix
+                    if(maze[h][i] == 5){
+                        makePath(h*300, i*300);
+                    }
+                    if(i>0 && i<13 && h>1 && h!= 9 && h <11 && maze[h][i]==5){
+                        openLots.push([h,i]);
+                    }
+                }
+            }
+            let hold;
+            let sechold;
+            while(numTrap> 0||numEnemy > 0 ){
+                hold = game.rnd.integerInRange(0,openLots.length-1);
+                if(numTrap>0){
+                    //debugger;
+                    numTrap--;
+                    sechold = openLots[hold];
+                    makeTrap(sechold[0]*300+150, sechold[1]*300+150);
+                    openLots.splice(hold,1);
+                }
+                else if(numEnemy>0){
+                    numEnemy--;
+                    sechold = openLots[hold];
+                    makeEnemy(sechold[0]*300+150, sechold[1]*300+150);
+                    openLots.splice(hold,1);
                 }
             }
         }

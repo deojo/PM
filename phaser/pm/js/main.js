@@ -10,7 +10,11 @@ var player, enemies;
 const sprintTimer = 192;
 var sprintUsed = 0;
 var spb, mask;
-var maze, nVisited;
+var maze, nVisited, emitter;
+var partic = 0;
+var keyNum = 0;
+var fade;
+var win = false;
 
 // define MainMenu state and methods
 var MainMenu = function(game) {};
@@ -20,15 +24,20 @@ MainMenu.prototype = {
 		//preload tile image
 		game.load.image('ground', 'assets/images/ground.png'); //ground tile (300x300px)
 		game.load.image('wall', 'assets/images/wall.png');
+		game.load.image('dirt', 'assets/images/dirt.png');
+		game.load.image('fade', 'assets/images/fade.png');
 
 		//preload object assets
-		game.load.image('trapOff', 'assets/images/trapOff.png'); //green default trap (50x50px)
-		game.load.image('trapOn', 'assets/images/claws.png'); //red default trap (50x50px)
+		game.load.image('trapOff1', 'assets/images/trap3Idle.png'); //green default trap (50x50px)
+		game.load.image('trapOn1', 'assets/images/trap3active.png'); //red default trap (50x50px)
+		game.load.image('trapOn2', 'assets/images/trap2active.png');
+		game.load.image('trapOff2', 'assets/images/trap2Idle.png');
 		game.load.image('sprint', 'assets/images/sprint.png'); //sprint bar
-
+		game.load.image('mainMenu', 'assets/images/trapMainMenu.png'); //main menu image
 		//preload character spritesheets
-		game.load.spritesheet('player', 'assets/images/mn.png', 140, 140); //minotaur player (80x55px)
-		game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
+		game.load.spritesheet('player', 'assets/images/mn(2).png', 180, 180); //minotaur player (80x55px)
+		//game.load.spritesheet('enemy', 'assets/images/spritesheet.png', 110, 110); //red enemy (80x45px)
+		game.load.spritesheet('enemy', 'assets/images/enemy2sprite.png', 110, 110);
 
 		//preload audio
 		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
@@ -40,9 +49,10 @@ MainMenu.prototype = {
 
 	//create() places main menu assets into game space
 	create: function() {
-		let titleText = game.add.text(35, 100, 'The Polite Minotaur', { fontSize: '35px', fill: '#000'}); //title text
-		let instructionText = game.add.text(30, 230, 'Goal: \n\nInstructions:  \n\n\nPress SPACEBAR to begin.', { fontSize: '16px', fill: '#000'}); //instruction text
-		game.stage.backgroundColor = "#7AD7F0"; //background color
+		let titleText = game.add.text(40, 100, 'The Polite Minotaur', { fontSize: '50px', fill: '#ffffff'}); //title text
+		let IntructionText = game.add.text(35, 230, 'Instructions: Press arrow keys to navigate, \nE to turn off and on traps, and SHIFT to sprint.\n\n\nPress SPACEBAR to begin.', { fontSize: '20px', fill: '#ffffff'}); //instruction text
+		game.stage.backgroundColor = "#000"; //background color
+		game.add.image(350, 300, 'mainMenu');
 	},
 
 
@@ -80,7 +90,7 @@ Play.prototype = {
 	create: function() {
 		//sets world Size
 
-		game.world.setBounds(0, 0, 2400, 2400);
+		game.world.setBounds(0, 0, 4000, 4000);
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.stage.backgroundColor = "#000000"; //background color (black walls)
 
@@ -112,15 +122,16 @@ Play.prototype = {
 		ranges = game.add.group();
 		enemies = game.add.group();
 
-		maze = generateMaze(7, 7);
+		maze = generateMaze(13, 13);
 		//place and draw groundtiles into maze paths into map (entire maze is sevenxseven tiles or 2100x2100px)
 
-		//create group traps
-		makeTrap(1900, 2000);
-		makeTrap(2000, 2000);
-
 		//place player into game
-		player = game.add.sprite(six, six, 'player');
+		let tempI = [1,3,5,7,9,11];
+		emitter = game.add.emitter(1,2,100);
+		emitter.makeParticles('dirt');
+		emitter.angularDrag = 100;
+		let h = game.rnd.integerInRange(0,5);
+		player = game.add.sprite(9*300+95, tempI[h]*300+150, 'player');
 		player.animations.add('down', [0, 1, 2, 3, 4], 10, true);
 		player.animations.add('left', [5, 6, 7, 8, 9], 10, true);
 		player.animations.add('up', [10, 11, 12, 13, 14], 10, true);
@@ -128,10 +139,12 @@ Play.prototype = {
 		game.physics.arcade.enable(player);
 		player.frozen = false;
 		player.body.collideWorldBounds = true;
+		player.anchor.setTo(0.5,0.5);
 		game.camera.follow(player);
-
-		makeEnemy(two,two);
-		makeEnemy(two,seven);
+		fade = game.add.image(-30,-30, 'fade');
+		fade.cameraOffset.setTo(0);
+		fade.fixedToCamera = true;
+		fade.scale.setTo(1.8,1.8);
 
 		this.cursors = game.input.keyboard.createCursorKeys();
 		// Sprint bar created
@@ -151,10 +164,15 @@ Play.prototype = {
 
 	//update() runs gameloop
 	update: function() {
+		emitter.x = player.x;
+		emitter.y = player.y;
 		//stop when the player collides with wall
 		let hitWall = game.physics.arcade.collide(player, walls);
-		
+		if (player.x< 280){
+			game.state.start('GameOver');
+		}
 		game.physics.arcade.overlap(enemies, traps, trapEnemy, null, this);
+		game.physics.arcade.overlap(player, enemies, kill, null, this);
 		game.physics.arcade.overlap(player, ranges, overlapRange, null, this);
 
 		let speed = this.walkSpeed;
@@ -175,31 +193,46 @@ Play.prototype = {
 			if (this.cursors.left.isDown) {//  Move left
 				player.animations.play('left');
 				player.body.velocity.x = -speed;
+				if(partic >= 5){
+					emitter.setXSpeed(75,0);
+					emitter.start(true,300,1,1);
+					partic = 0;
+				}
 			}
 			else if (this.cursors.right.isDown) { //  Move right
 				player.animations.play('right');
 				player.body.velocity.x = speed;
-
+				if(partic >= 5){
+					emitter.setXSpeed(-75,0);
+					emitter.start(true,300,1,1);
+					partic = 0;
+				}
 			}
 			else if (this.cursors.up.isDown) { //  Move up
 				player.animations.play('up');
 				player.body.velocity.y = -speed;
-
+				if(partic >= 5){
+					emitter.setYSpeed(-75,0);
+					emitter.start(true,300,1,1);
+					partic = 0;
+				}
 			}
 			else if (this.cursors.down.isDown) { //  Move down
 				player.animations.play('down');
 				player.body.velocity.y = speed;
+				if(partic >= 5){
+					emitter.setYSpeed(75,0);
+					emitter.start(true,300,1,1);
+					partic = 0;
+				}
 			}
 			else {
 				//  Stand still
-				player.animations.stop();
-				player.frame = 2;
+				emitter.setXSpeed(0,0);
+				emitter.setYSpeed(0,0);
+				player.animations.pause = true;
 			}
-		}
-
-		if(player.x >= six && player.y >= seven){
-			sound3.play();
-			game.state.start('GameOver', true, false, this.score );
+			partic ++;
 		}
 	},
 };
@@ -214,8 +247,17 @@ GameOver.prototype = {
 
 	//create() places game over text into game space
 	create: function() {
-		game.stage.backgroundColor = "#ffdbe9"; //background color
-		let titleText = game.add.text(35, 35, 'Game Over', { fontSize: '35px', fill: '#000'});
+		if (!win){ //lose screen if you lose game
+			game.stage.backgroundColor = "#ffdbe9"; //background color
+			let titleText = game.add.text(35, 35, 'Game Over: You were killed.', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(50, 35, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+		}
+		if (win){ //win screen if you win game
+			game.stage.backgroundColor = "#000"; //background color
+			let titleText = game.add.text(35, 150, 'Game Over: You escaped!!', { fontSize: '35px', fill: '#ffffff'});
+			let creditText = game.add.text(35,300, 'Credits: \nMaxwell Burkhart: Programming and Sound Design\nDeo Joshi: Programming and Art\nAttie Sit: Programming and Art', {fill: '#ffffff'});
+			win = false; //reset
+		}
 	},
 
 	//update() runs game-over loop
@@ -263,7 +305,14 @@ function makeEnemy(x, y) {
 	enemies.add(enemy);
 }
 function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
-	let trap = new Trap(game, 'trapOn', "trapOff", 0, x, y, active, rangeX, rangeY);
+	let trap;
+	if(keyNum %2 ==0){
+ 		trap = new Trap(game, 'trapOn1', "trapOff1", 0, x, y, active, rangeX, rangeY);
+	}
+	else{
+		trap = new Trap(game, 'trapOn2', "trapOff2", 0, x, y, active, rangeX, rangeY);
+	}
+	keyNum++;
 	game.add.existing(trap);
 	game.add.existing(trap.range);
 	traps.add(trap);
