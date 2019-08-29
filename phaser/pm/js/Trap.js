@@ -16,6 +16,7 @@ function Trap(game, key1, key2, frame, x , y, active, rangeX, rangeY) {
     this.range = game.make.sprite(x-rangeX/2, y-rangeY/2, null);
     game.physics.enable(this.range);
     this.range.enableBody = true;
+    this.anchor.setTo(0.5,0.5);
     this.range.body.setSize(rangeX, rangeY);
     this.range.container = this;
 }
@@ -39,7 +40,7 @@ Trap.prototype.toggle = function() {
         this.active = !this.active;
         this.count = 0;
         this.collided = false;
+        hitTrap.play();
     }else{game.camera.shake(); this.count++;}
     return this.count !== 5 && this.active;
 };
-
