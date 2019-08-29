@@ -3,7 +3,7 @@
 // define game
 var game = new Phaser.Game(900, 900, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
 var six , seven;
-var sound3, nd;
+var sound3, nd, hitTrap, death, walking;
 var paths, walls;
 var traps, ranges, toggleTrap;
 var player, enemies;
@@ -12,6 +12,7 @@ var sprintUsed = 0;
 var spb, mask;
 var maze, nVisited, emitter;
 var partic = 0;
+var par = 0;
 var keyNum = 0;
 var fade;
 var win = false;
@@ -42,8 +43,11 @@ MainMenu.prototype = {
 		//preload audio
 		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
 		game.load.audio('die',['assets/audio/Die.mp3']);
-   		game.load.audio('score',['assets/audio/Score.mp3']);
-    	game.load.audio('song',['assets/audio/Song.mp3']);
+   	game.load.audio('score',['assets/audio/Score.mp3']);
+    game.load.audio('song',['assets/audio/Song.mp3']);
+		game.load.audio('HitTrap',['assets/audio/HitTrap.mp3']);
+		game.load.audio('walking',['assets/audio/walking.mp3']);
+		game.load.audio('Death',['assets/audio/Death.mp3']);
 	},
 
 
@@ -83,6 +87,11 @@ Play.prototype = {
 
 		sound3 = game.add.audio('shoot');
 		nd = game.add.audio('die');
+		walking = game.add.audio('walking');
+		hitTrap = game.add.audio('HitTrap');
+		death = game.add.audio('death');
+
+
 	},
 
 
@@ -198,6 +207,10 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
+				if(par >= 25){
+					walking.play();
+					par = 0;
+				}
 			}
 			else if (this.cursors.right.isDown) { //  Move right
 				player.animations.play('right');
@@ -206,6 +219,10 @@ Play.prototype = {
 					emitter.setXSpeed(-75,0);
 					emitter.start(true,300,1,1);
 					partic = 0;
+				}
+				if(par >= 25){
+					walking.play();
+					par = 0;
 				}
 			}
 			else if (this.cursors.up.isDown) { //  Move up
@@ -216,6 +233,10 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
+				if(par >= 25){
+					walking.play();
+					par = 0;
+				}
 			}
 			else if (this.cursors.down.isDown) { //  Move down
 				player.animations.play('down');
@@ -225,6 +246,10 @@ Play.prototype = {
 					emitter.start(true,300,1,1);
 					partic = 0;
 				}
+				if(par >= 25){
+					walking.play();
+					par = 0;
+				}
 			}
 			else {
 				//  Stand still
@@ -233,6 +258,7 @@ Play.prototype = {
 				player.animations.pause = true;
 			}
 			partic ++;
+			par ++;
 		}
 	},
 };
