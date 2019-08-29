@@ -90,42 +90,44 @@ Enemy.prototype.minimumDistance = function (enemyPosition, playerPosition, maze,
 };
 
 Enemy.prototype.search = function (player, maze, mazeValues) {
-    let enemyPosition = {x:Math.floor(this.body.x/300), y:Math.floor(this.body.y/300), dist:0, parent: null};
-    let playerPosition = {x:Math.floor(player.body.x / 300),y: Math.floor(player.body.y / 300)};
+    if( ! this.frozen ){
+        let enemyPosition = {x:Math.floor(this.body.x/300), y:Math.floor(this.body.y/300), dist:0, parent: null};
+        let playerPosition = {x:Math.floor(player.body.x / 300),y: Math.floor(player.body.y / 300)};
 
-    let nextEnemyPosition = this.minimumDistance(enemyPosition, playerPosition, maze, mazeValues);
+        let nextEnemyPosition = this.minimumDistance(enemyPosition, playerPosition, maze, mazeValues);
 
-    if( nextEnemyPosition != null ) {
-        while (nextEnemyPosition !== null ){
-            if( nextEnemyPosition.parent !== null &&
-                !(nextEnemyPosition.parent.x === enemyPosition.x && nextEnemyPosition.parent.y === enemyPosition.y)) {
-                nextEnemyPosition = nextEnemyPosition.parent;
-            }else{
-                break;
+        if( nextEnemyPosition != null ) {
+            while (nextEnemyPosition !== null) {
+                if (nextEnemyPosition.parent !== null &&
+                    !(nextEnemyPosition.parent.x === enemyPosition.x && nextEnemyPosition.parent.y === enemyPosition.y)) {
+                    nextEnemyPosition = nextEnemyPosition.parent;
+                } else {
+                    break;
+                }
             }
+            let xDifference = enemyPosition.x - nextEnemyPosition.x;
+            let yDifference = enemyPosition.y - nextEnemyPosition.y;
+
+            if (xDifference < 0) {
+                //left
+                this.frame = 2;
+            } else if (xDifference > 0) {
+                // right
+                this.frame = 0;
+            } else if (yDifference < 0) {
+                //top
+                this.frame = 3;
+            } else if (yDifference > 0) {
+                //bottom
+                this.frame = 1;
+            }
+
+
+            this.previousEnemyPosition = nextEnemyPosition;
+            let x = (nextEnemyPosition.x * 300) + 95;
+            let y = (nextEnemyPosition.y * 300) + 95;
+            game.physics.arcade.moveToXY(this, x, y, 100);
         }
-        let xDifference = enemyPosition.x - nextEnemyPosition.x;
-        let yDifference = enemyPosition.y - nextEnemyPosition.y;
-
-        if( xDifference < 0 ){
-            //left
-            this.frame = 2;
-        }else if( xDifference > 0 ){
-            // right
-            this.frame = 0;
-        }else if( yDifference < 0 ){
-            //top
-            this.frame = 3;
-        }else if( yDifference > 0 ){
-            //bottom
-            this.frame = 1;
-        }
-
-
-        this.previousEnemyPosition = nextEnemyPosition;
-        let x = (nextEnemyPosition.x * 300) + 95;
-        let y = (nextEnemyPosition.y * 300) + 95;
-        game.physics.arcade.moveToXY(this, x, y, 100);
     }
 }
 
@@ -193,6 +195,8 @@ Enemy.prototype.update = function() {
             this.body.velocity.setTo(0,0);
             this.search(player, maze, mazeValues);
         }
+    }else{
+        this.body.velocity.setTo(0,0);
     }
 };
 

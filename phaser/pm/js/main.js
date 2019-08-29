@@ -289,7 +289,7 @@ Play.prototype = {
 // define GameOver and methods
 var GameOver = function(game) {};
 GameOver.prototype = {
-	//preload() function preloads assets
+	//preload() function preloads assetst
 	preload: function() {
 
 	},
