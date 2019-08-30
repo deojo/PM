@@ -3,14 +3,13 @@
 function Wall(game, key, frame, x , y) {
 
     // Create Walls
-
     Phaser.Sprite.call(this, game, x, y, key, frame);
 
     this.enableBody = true;
     // put some physics on it
     game.physics.enable(this);
     this.body.collideWorldBounds = false;
-
+    // make immovable
     this.body.immovable = true;
 }
 

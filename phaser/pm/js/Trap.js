@@ -35,13 +35,14 @@ Trap.prototype.activate = function() {
     this.active = true;
 };
 
+// change graphics of trap and whether it can trap objects
 Trap.prototype.toggle = function() {
     if (this.count === 5 || !this.active || !this.collided){
         this.loadTexture(this.keyset[1 - this.keyset.indexOf(this.key)]);
         this.active = !this.active;
         this.count = 0;
         this.collided = false;
-        hitTrap.play();
+        activate.play();
     }else{game.camera.shake(); this.count++;}
     return this.count !== 5 && this.active;
 };

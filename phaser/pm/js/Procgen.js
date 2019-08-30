@@ -7,6 +7,7 @@ const mazeValues ={
 
 };
 
+
 function generateMaze(x,y){
     maze = [];
     let temp;
@@ -21,86 +22,7 @@ function generateMaze(x,y){
     createInner(exit, x ,y);
     return maze;
 }
-/*
-function generateMaze(x,y){
-    maze = [
-        [
-            1,
-            2,
-            1,
-            1,
-            1,
-            1,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            5,
-            5,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            5,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            1,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            5,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1
-        ]
-    ];
-    displayMaze();
-    return maze;
-}
 
-function displayMaze(){
-    for(let i = 0 ; i < maze[0].length ; i++){
-        for( let j = 0 ;j < maze.length ; j++){
-             if( maze[i][j] === mazeValues.Wall){
-                 makeWall(i*300, j* 300);
-             }
-        }
-    }
-}*/
 // creates the perimater of the maze
 function createPerimeter(x,y,exit){
     console.log(maze);
@@ -117,8 +39,6 @@ function createPerimeter(x,y,exit){
                 }
                 else if(i == exit || h === y-1){
                   makePath(0, exit*300);
-                  let winTile = game.add.image(0, exit*300, 'doors');
-
                 }
             }
             if(maze[0].length > y){
@@ -268,8 +188,8 @@ function createInner(start, width, length){
                 }
             }
             let openLots = [];
-            let numTrap = 7;
-            let numEnemy = 7;
+            let numTrap = Math.ceil(length/2);
+            let numEnemy = Math.ceil(length/2);
             for(var i = 0; i <length; i++){//i represents the y axis
                 for(var h = 0; h<width; h++){//h represents the x axix
                     if(maze[h][i] == 5){
@@ -294,7 +214,7 @@ function createInner(start, width, length){
                 else if(numEnemy>0){
                     numEnemy--;
                     sechold = openLots[hold];
-                    makeEnemy(sechold[0]*300+150, sechold[1]*300+150);
+                    makeEnemy(sechold[0]*300+95, sechold[1]*300+95);
                     openLots.splice(hold,1);
                 }
             }
