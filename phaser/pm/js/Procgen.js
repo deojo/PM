@@ -21,86 +21,6 @@ function generateMaze(x,y){
     createInner(exit, x ,y);
     return maze;
 }
-/*
-function generateMaze(x,y){
-    maze = [
-        [
-            1,
-            2,
-            1,
-            1,
-            1,
-            1,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            5,
-            5,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            5,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            1,
-            1,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            5,
-            5,
-            5,
-            1,
-            5,
-            1
-        ],
-        [
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1
-        ]
-    ];
-    displayMaze();
-    return maze;
-}
-
-function displayMaze(){
-    for(let i = 0 ; i < maze[0].length ; i++){
-        for( let j = 0 ;j < maze.length ; j++){
-             if( maze[i][j] === mazeValues.Wall){
-                 makeWall(i*300, j* 300);
-             }
-        }
-    }
-}*/
 // creates the perimater of the maze
 function createPerimeter(x,y,exit){
     console.log(maze);
@@ -117,8 +37,6 @@ function createPerimeter(x,y,exit){
                 }
                 else if(i == exit || h === y-1){
                   makePath(0, exit*300);
-                  let winTile = game.add.image(0, exit*300, 'doors');
-
                 }
             }
             if(maze[0].length > y){

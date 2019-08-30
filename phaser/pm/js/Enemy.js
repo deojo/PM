@@ -89,13 +89,20 @@ Enemy.prototype.minimumDistance = function (enemyPosition, playerPosition, maze,
     return null;
 };
 
+//Enemy.prototype.render = function() {
+//  game.debug.geom(Phaser.Line(this.body.x, this.body.y,  (this.remember_target_TEMP.x * 300) + 95, (this.remember_target_TEMP.y * 300) + 95), "#ffffff", false);
+//  console.log((this.remember_target_TEMP.x * 300) + 95, (this.remember_target_TEMP.y * 300) + 95));
+//  debugger;
+//}
+
 Enemy.prototype.search = function (player, maze, mazeValues) {
     if( ! this.frozen ){
         let enemyPosition = {x:Math.floor(this.body.x/300), y:Math.floor(this.body.y/300), dist:0, parent: null};
         let playerPosition = {x:Math.floor(player.body.x / 300),y: Math.floor(player.body.y / 300)};
 
         let nextEnemyPosition = this.minimumDistance(enemyPosition, playerPosition, maze, mazeValues);
-
+        this.remember_target_TEMP = nextEnemyPosition;
+        //console.log(nextEnemyPosition);
         if( nextEnemyPosition != null ) {
             while (nextEnemyPosition !== null) {
                 if (nextEnemyPosition.parent !== null &&
@@ -157,6 +164,11 @@ Enemy.prototype.raycast = function(maze, mazeValues){
 };
 
 Enemy.prototype.update = function() {
+  if(this.remember_target_TEMP) {
+    //console.log("update");
+    //game.debug.geom(Phaser.Line(this.body.x, this.body.y,  (this.remember_target_TEMP.x * 300) + 95, (this.remember_target_TEMP.y * 300) + 95), "#ffffff", false);
+    //console.log((this.remember_target_TEMP.x * 300) + 95, (this.remember_target_TEMP.y * 300) + 95);
+}
     if (!this.frozen ) {
         let start = [Math.floor(this.body.x / 300), Math.floor(this.body.y / 300)];
         let end = [Math.floor(player.x / 300), Math.floor(player.y / 300)];
@@ -193,7 +205,12 @@ Enemy.prototype.update = function() {
         }else /*if ( dist < 5 )*/ {
             this.boundsBreached = true;
             this.body.velocity.setTo(0,0);
+
+
+            //enemySound.stop();
             this.search(player, maze, mazeValues);
+            //mainSound.play();
+
         }
     }else{
         this.body.velocity.setTo(0,0);
@@ -203,4 +220,3 @@ Enemy.prototype.update = function() {
 function euclidean(pos1, pos2) {
     return Math.abs(pos1[0] - pos2[0]) + Math.abs(pos1[1] - pos2[1]);
 }
-
