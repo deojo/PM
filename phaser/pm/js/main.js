@@ -21,6 +21,8 @@ var s;
 // initialize on load
 window.onload = function(){
 	game = new Phaser.Game(900, 900, Phaser.AUTO);
+
+	//game.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 	game.state.add('MainMenu', MainMenu);
 	game.state.add('Play', Play);
 	game.state.add('GameOver', GameOver);
