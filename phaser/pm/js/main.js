@@ -1,7 +1,8 @@
-// team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo
+// team git hub https://github.com/MaxwellBurkhart/Polite-Minotaur-repo && finished on https://github.com/deojo/PM
+// Team Members: Maxwell Burkhart, Deo Joshi, Attie Sit
+
 "use strict";
-// define game
-var game = new Phaser.Game(900, 900, Phaser.AUTO); //maze size is 2400x2400 (actual maze is 7x7 tiles or 2100x2100px but I left a 8x8 border (1 tile thick border) around maze)
+var game = new Phaser.Game(900, 900, Phaser.AUTO); //define game
 var six , seven;
 var sound3, nd, hitTrap, death, walking, mainSound, enemySound, activate, winSound;
 var paths, walls;
@@ -61,16 +62,10 @@ MainMenu.prototype = {
 	},
 
 
-	//create() places main menu assets into game space
+	//create() places main menu screen into game space
 	create: function() {
 		game.stage.backgroundColor = "#000"; //background color
-		game.add.image(0, 0, 'mainMenu');
-		//game.add.image(330, 80, 'bubble');
-		//game.add.image(450, 60, 'bubble');
-		//game.add.image(580, 80, 'bubble');
-		//let titleText = game.add.text(40, 350, 'The Polite \n  Minotaur', { fontSize: '70px', fill: '#ffffff', font: 'Press Start 2P'}); //title text
-		//let minotaurText = game.add.text(40, 100, 'Please leave my home.. \nI have to escape..', { fontSize: '50px', fill: '#ffffff', font: 'Bahianita'}); //title text
-		//let IntructionText = game.add.text(200, 600, 'Instructions: Press arrow keys to navigate, \nPress T to turn off and on traps, and SHIFT to sprint.\n\n             Press SPACEBAR to begin.', { fontSize: '50px', fill: '#ffffff', font: 'Bahianita'}); //instruction text
+		game.add.image(0, 0, 'mainMenu'); //main main screen
 	},
 
 
@@ -118,12 +113,11 @@ Play.prototype = {
 	//create() places assets into game space
 	create: function() {
 		//sets world Size
-
 		game.world.setBounds(0, 0, 4000, 4000);
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		game.stage.backgroundColor = "#000000"; //background color (black walls)
+		game.stage.backgroundColor = "#000000"; //background color black
 
-		let music = game.add.audio('song', 1, true, true);
+		let music = game.add.audio('song', 1, true, true); //game music
 		//music.play();
 
 		//set T key as toggle trap button
@@ -144,17 +138,16 @@ Play.prototype = {
 		var eight = start+tileSize*7;
 
 
-		//create group called paths for groundtiles
-		paths = game.add.group();
-		walls = game.add.group();
-		traps = game.add.group();
-		ranges = game.add.group();
-		enemies = game.add.group();
+		paths = game.add.group(); //create group called paths for groundtiles
+		walls = game.add.group(); //create group called walls for wall tiles
+		traps = game.add.group(); //create traps group
+		ranges = game.add.group(); //create ground for detection range
+		enemies = game.add.group(); //create enemies group
 
 		//maze = generateMaze(7, 7);
-		maze = generateMaze(13, 13);
+		maze = generateMaze(13, 13); //procedural generation
 
-		//place player into game
+		//code to create dirt trail
 		let tempI = [1,3,5,7,9,11];
 		emitter = game.add.emitter(1,2,100);
 		emitter.makeParticles('dirt');
@@ -165,15 +158,20 @@ Play.prototype = {
 		player.animations.add('left', [5, 6, 7, 8, 9], 10, true);
 		player.animations.add('up', [10, 11, 12, 13, 14], 10, true);
 		player.animations.add('right', [15, 16, 17, 18, 19], 10, true);
+		//give player physics and collision
 		game.physics.arcade.enable(player);
 		player.frozen = false;
 		player.body.collideWorldBounds = true;
 		player.anchor.setTo(0.5,0.5);
+		//have camera follow player
 		game.camera.follow(player);
 		fade = game.add.image(-30,-30, 'fade');
+		//code to add fade for lighting effect
 		fade.cameraOffset.setTo(0);
 		fade.fixedToCamera = true;
 		fade.scale.setTo(1.8,1.8);
+
+		//play enemy sound
 		enemySound.play();
 
 		this.cursors = game.input.keyboard.createCursorKeys();
@@ -192,14 +190,13 @@ Play.prototype = {
 		game.camera.follow(player);
 		for (let ha = 1; ha<13; ha++){
 			if (maze[0][ha] == 2){
-				winTile = game.add.image(0, ha*300, 'doors');
+				winTile = game.add.image(0, ha*300, 'doors'); //add doors but have it above fade and player
 			}
 		}
 	},
 
 	//update() runs gameloop
 	update: function() {
-		//console.log(player.x, player.y);
 		emitter.x = player.x;
 		emitter.y = player.y;
 		//stop when the player collides with wall
@@ -207,14 +204,18 @@ Play.prototype = {
 		if (player.x< 280){
 			win = true;
 			winSound.play();
-			game.state.start('GameOver');
+			game.state.start('GameOver'); //move to gameOver state
 		}
+		//trap enemy in trap if they touch
 		game.physics.arcade.overlap(enemies, traps, trapEnemy, null, this);
+		//kill player when enemy catches player
 		game.physics.arcade.overlap(player, enemies, kill, null, this);
+	    //lets player turn off traps if near
 		game.physics.arcade.overlap(player, ranges, overlapRange, null, this);
 
 		let speed = this.walkSpeed;
-		game.physics.arcade.overlap(player, traps, overlapTrap, null, this);
+		game.physics.arcade.overlap(player, traps, overlapTrap, null, this); //trap player in traps
+		//code to add sprint related functions and sprint bar
 		if (game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) && sprintUsed < sprintTimer
 			&& (this.cursors.left.isDown || this.cursors.right.isDown ||
 				this.cursors.up.isDown || this.cursors.down.isDown) && !hitWall && !player.frozen){
@@ -319,24 +320,24 @@ GameOver.prototype = {
 	//update() runs game-over loop
 	update: function() {
 		if (game.input.keyboard.isDown(Phaser.KeyCode.SPACEBAR)) { //if space is pressed, restart back to Play
-			win = false;
+			win = false; //reset win/lose state
 			game.state.start('Play'); //return to playstate
 		}
 	},
 };
-
+//toggle traps if in range
 function overlapRange(player, range) {
 	if(toggleTrap.justPressed()){
 		range.container.toggle();
 	}
 }
-
+//freeze enemy in traps
 function trapEnemy(enemy, trap) {
 	if (trap.active) {
 		enemy.frozen = true;
 	}
 }
-
+//freeze player in traps
 function overlapTrap(player, trap) {
 	trap.collided =true;
 	if(trap.active){
@@ -346,9 +347,11 @@ function overlapTrap(player, trap) {
 		player.frozen = trap.toggle();
 	}
 }
+//draws path of maze
 function makePath(x, y) {
 	paths.create(x, y, 'ground');
 }
+//draw walls of maze
 function makeWall(x, y) {
 	let wall = new Wall(game, 'wall', 0, x, y);
 	game.add.existing(wall);
@@ -358,7 +361,7 @@ function makeWall(x, y) {
 function makeEnemy(x, y) {
 //place a enemy into game
 	let enemy;
-	if(keyNum1%2 ==0){
+	if(keyNum1%2 ==0){ //alternate pasting the two types of enemy in the game
 		enemy = new Enemy(game, 'enemy', 0, x, y, player, maze, mazeValues);
 	}else{
 		enemy = new Enemy(game, 'enemy2', 0, x, y, player, maze, mazeValues);
@@ -369,7 +372,7 @@ function makeEnemy(x, y) {
 }
 function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
 	let trap;
-	if(keyNum%2 ==0){
+	if(keyNum%2 ==0){ //alternate pasting the two types of traps in the game
  		trap = new Trap(game, 'trapOn1', "trapOff1", 0, x, y, active, rangeX, rangeY);
 	}
 	else{
@@ -382,7 +385,7 @@ function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
 	ranges.add(trap.range);
 
 }
-
+//kill player and move to gameOver state
 function kill(player, enemy){
   nd.play();
   game.state.start('GameOver');
