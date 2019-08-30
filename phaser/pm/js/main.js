@@ -19,6 +19,7 @@ var keyNum1 = 0;
 var fade;
 var win = false;
 var winTile;
+var s;
 
 // define MainMenu state and methods
 var MainMenu = function(game) {};
@@ -335,6 +336,7 @@ function overlapRange(player, range) {
 function trapEnemy(enemy, trap) {
 	if (trap.active) {
 		enemy.frozen = true;
+		//playHit();
 	}
 }
 //freeze player in traps
@@ -342,9 +344,14 @@ function overlapTrap(player, trap) {
 	trap.collided =true;
 	if(trap.active){
 		player.frozen = true;
+		if(s == 0){
+			playHit();
+			s++;
+		}
 	}
 	if(toggleTrap.justPressed()){
 		player.frozen = trap.toggle();
+		s = 0;
 	}
 }
 //draws path of maze
@@ -389,6 +396,9 @@ function makeTrap(x, y, active=true, rangeX=200, rangeY=200) {
 function kill(player, enemy){
   nd.play();
   game.state.start('GameOver');
+}
+function playHit(){
+	nd.play();
 }
 //Game States
 game.state.add('MainMenu', MainMenu);
