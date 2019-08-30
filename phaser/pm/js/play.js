@@ -227,6 +227,9 @@ function trapEnemy(enemy, trap) {
 }
 //freeze player in traps
 function overlapTrap(player, trap) {
+	if (trap.collide == false){
+		playHit();
+	}
 	trap.collided =true;
 	if(trap.active){
 		player.frozen = true;
