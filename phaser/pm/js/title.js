@@ -28,8 +28,8 @@ MainMenu.prototype = {
 		//preload audio
 		game.load.audio('shoot', 'assets/audio/Shoot(1).mp3');
 		game.load.audio('die',['assets/audio/Die.mp3']);
-   	game.load.audio('score',['assets/audio/Score.mp3']);
-    game.load.audio('song',['assets/audio/Song.mp3']);
+		//game.load.audio('score',['assets/audio/Score.mp3']);
+		//game.load.audio('song',['assets/audio/Song.mp3']);
 		game.load.audio('walking',['assets/audio/walking.mp3']);
 		game.load.audio('Death',['assets/audio/Death.mp3']);
 		game.load.audio('main',['assets/audio/main.mp3']);

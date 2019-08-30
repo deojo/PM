@@ -122,7 +122,8 @@ Enemy.prototype.search = function (player, maze, mazeValues) {
             }else if( enemyPosition.x != nextEnemyPosition.x &&
                 (nextEnemyPosition.y * 300 + 95)  != Math.round(this.body.y) ) {
                 x = (enemyPosition.x * 300) + 95
-            }else{
+            }else
+            {
 
                 // xdiffernce and ydifference will tell us the direction of the enemy
                 let xDifference = enemyPosition.x - nextEnemyPosition.x;
@@ -143,6 +144,8 @@ Enemy.prototype.search = function (player, maze, mazeValues) {
                     this.frame = 1;
                 }
             }
+
+
             this.previousEnemyPosition = nextEnemyPosition;
             game.physics.arcade.moveToXY(this, x, y, 100);
 
@@ -192,24 +195,24 @@ Enemy.prototype.update = function() {
         if( dist >= 2 && !this.boundsBreached) {
             if (this.bounds[2]) {
                 // left
-                if (this.body.x <= 300 * this.bounds[0] + 300) {
+                if (this.body.x <= 300 * this.bounds[0] + 350) {
                     this.dir = 1;
                     this.frame = 2;
                 }
                 // right
-                if (this.body.x >= 300 * this.bounds[1] - 100) {
+                if (this.body.x >= 300 * this.bounds[1] - 150) {
                     this.dir = -1;
                     this.frame = 0;
                 }
                 this.body.velocity.x = 200 * this.dir;
             } else {
                 //top
-                if (this.body.y <= 300 * this.bounds[0] + 300) {
+                if (this.body.y <= 300 * this.bounds[0] + 350) {
                     this.dir = 1;
                     this.frame = 3;
                 }
                 //bottom
-                if (this.body.y >= 300 * this.bounds[1] - 100) {
+                if (this.body.y >= 300 * this.bounds[1] - 150) {
                     this.dir = -1;
                     this.frame = 1;
                 }
