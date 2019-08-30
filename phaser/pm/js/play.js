@@ -6,7 +6,6 @@ Play.prototype = {
 		// created local variable score in this
 		this.state = "Play";
 		this.level = level;
-		this.score = 0;
 		this.walkSpeed = 300;
 		this.runSpeed = 750;
 	},
@@ -102,6 +101,11 @@ Play.prototype = {
 
 	//update() runs gameloop
 	update: function() {
+		if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+			// pass this.level to next state
+			// .start(key, clearWorld, clearCache, parameter)
+			game.state.start('Play', true, false,this.level);
+		}
 		emitter.x = player.x;
 		emitter.y = player.y;
 		//stop when the player collides with wall

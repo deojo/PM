@@ -8,6 +8,8 @@ MainMenu.prototype = {
 		game.load.image('dirt', 'assets/images/dirt.png');
 		game.load.image('fade', 'assets/images/fade.png');
 		game.load.image('doors', 'assets/images/doors.png');
+		game.load.image('lose', 'assets/images/lose.png');
+		game.load.image('win', 'assets/images/win.png');
 
 		//preload object assets
 		game.load.image('trapOff1', 'assets/images/trap3Idle.png'); //green default trap (50x50px)
@@ -36,6 +38,13 @@ MainMenu.prototype = {
 		game.load.audio('enemy',['assets/audio/enemy.mp3']);
 		game.load.audio('activate',['assets/audio/activate.mp3']);
 		game.load.audio('win',['assets/audio/win.mp3']);
+	},
+	
+	init: function(){
+		//game.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		//game.scale.pageAlignHorizontally = true;
+		//game.scale.pageAlignVertically = false;
+		//game.scale.windowConstraints.bottom = "visual";
 	},
 
 
