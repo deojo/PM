@@ -13,6 +13,7 @@ var partic = 0;
 var par = 0;
 var keyNum = 0;
 var keyNum1 = 0;
+var first = 0;
 var fade;
 var win = false;
 var winTile;

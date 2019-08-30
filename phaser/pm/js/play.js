@@ -48,7 +48,7 @@ Play.prototype = {
 		ranges = game.add.group(); //create ground for detection range
 		enemies = game.add.group(); //create enemies group
 
-		
+
 		maze = generateMaze(13 + 4 * this.level, 13 + 4 * this.level); //procedural generation
 
 		//code to create dirt trail
@@ -76,7 +76,10 @@ Play.prototype = {
 		fade.scale.setTo(1.8,1.8);
 
 		//play enemy sound
-		enemySound.play();
+		if(first == 0){
+			enemySound.play();
+			first++;
+		}
 
 		this.cursors = game.input.keyboard.createCursorKeys();
 		// Sprint bar created
